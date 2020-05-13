@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { Redirect } from 'react-router-dom';
 import Axios from 'axios';
 import './style.css';
@@ -23,6 +23,11 @@ class Home extends React.Component<{}, State> {
         if (!result.data?.data) {
           this.setState({
             isLogin: false,
+            loaded: true,
+          });
+        } else {
+          this.setState({
+            loaded: true,
           });
         }
       })
@@ -30,6 +35,23 @@ class Home extends React.Component<{}, State> {
         console.log(err);
       });
   }
+
+  handleLogOut = (e: React.MouseEvent) => {
+    Axios.get('/api/logout')
+      .then((result) => {
+        if (result.data?.data) {
+          this.setState({
+            isLogin: false,
+          });
+        } else {
+          message.error('log out faield');
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   render() {
     const { isLogin, loaded } = this.state;
     if (isLogin) {
@@ -40,7 +62,9 @@ class Home extends React.Component<{}, State> {
               get data
             </Button>
             <Button type='primary'>show data</Button>
-            <Button type='primary'>log out</Button>
+            <Button type='primary' onClick={this.handleLogOut}>
+              log out
+            </Button>
           </div>
         );
       }

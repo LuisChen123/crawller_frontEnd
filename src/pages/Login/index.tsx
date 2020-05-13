@@ -1,14 +1,39 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import './style.css';
-import { Form, Input, Button } from 'antd';
+import qs from 'qs';
+import Axios from 'axios';
+import { Redirect } from 'react-router-dom';
+import { Form, Input, Button, message } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
 
 const NormalLoginForm = () => {
+  const [isLogin, setIsLogin] = useState(false);
   const onFinish = (values: any) => {
-    console.log('Received values of form: ', values);
+    // console.log(values);
+    if (values) {
+      Axios.post(
+        '/api/login',
+        qs.stringify({
+          password: values.password,
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }
+      ).then((res) => {
+        if (res.data?.data) {
+          setIsLogin(true);
+        } else {
+          message.error('login faild');
+        }
+      });
+    }
   };
 
-  return (
+  return isLogin ? (
+    <Redirect to='/' />
+  ) : (
     <div className='login'>
       <Form
         name='normal_login'
